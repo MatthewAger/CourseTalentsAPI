@@ -5,6 +5,6 @@ FactoryBot.define do
     learning_path { build(:learning_path) }
     talent        { build(:user) }
 
-    completed { false }
+    completed_at { nil }
   end
 end

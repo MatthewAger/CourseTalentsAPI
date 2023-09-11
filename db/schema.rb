@@ -18,7 +18,7 @@ ActiveRecord::Schema.define(version: 2023_09_07_044850) do
   create_table "course_talents", force: :cascade do |t|
     t.bigint "course_id", null: false
     t.bigint "talent_id", null: false
-    t.boolean "completed", default: false, null: false
+    t.datetime "completed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["course_id", "talent_id"], name: "index_course_talents_on_course_id_and_talent_id", unique: true
@@ -49,7 +49,7 @@ ActiveRecord::Schema.define(version: 2023_09_07_044850) do
   create_table "learning_path_talents", force: :cascade do |t|
     t.bigint "learning_path_id", null: false
     t.bigint "talent_id", null: false
-    t.boolean "completed", default: false, null: false
+    t.datetime "completed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["learning_path_id", "talent_id"], name: "index_learning_path_talents_on_learning_path_id_and_talent_id", unique: true

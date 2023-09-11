@@ -3,8 +3,9 @@
 Rails.application.routes.draw do
   scope :api do
     resources :learning_paths
-    resources :talents
     resources :courses
-    resources :users
+    resources :users do
+      resources :courses, only: :update, controller: 'users/courses'
+    end
   end
 end

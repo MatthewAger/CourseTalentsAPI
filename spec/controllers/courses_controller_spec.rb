@@ -64,8 +64,25 @@ RSpec.describe CoursesController, type: :controller do
       it 'returns an error' do
         post :create, params: course_params, as: :json
         expect(response.status).to eq(422)
-        error = { success: false, errors: ['Author must exist', "Title can't be blank", "Description can't be blank"] }
+        error = { success: false, messages: ['Author must exist', "Title can't be blank", "Description can't be blank"] }
         expect(response.body).to eq(error.to_json)
+      end
+    end
+
+    context 'when the author is also a talent' do
+      let!(:talent) { create(:user, :with_courses) }
+      let(:course_params) { { author_id: talent.id, title: 'MyString', description: 'MyText' } }
+
+      it 'creates a course but the author cannot also be a talent' do
+        expect { post :create, params: course_params, as: :json }.to change(Course, :count).by(1)
+        expect(response.status).to eq(200)
+
+        json = response.parsed_body
+        expect(json['author']['id']).to eq(talent.id)
+
+        course = Course.find(json['id'])
+        course_talent = build(:course_talent, course:, talent:)
+        expect(course_talent).not_to be_valid
       end
     end
   end
@@ -93,7 +110,7 @@ RSpec.describe CoursesController, type: :controller do
       it 'returns an error' do
         put :update, params: { id: course.id }.merge(course_params), as: :json
         expect(response.status).to eq(422)
-        error = { success: false, errors: ["Title can't be blank", "Description can't be blank"] }
+        error = { success: false, messages: ["Title can't be blank", "Description can't be blank"] }
         expect(response.body).to eq(error.to_json)
       end
     end

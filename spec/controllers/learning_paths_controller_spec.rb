@@ -49,6 +49,8 @@ RSpec.describe LearningPathsController, type: :controller do
         expect(json['courses']).to be_a(Array)
         expect(json['courses'].size).to eq(3)
         expect(json['courses'].first.keys).to eq(%w[id title description created_at updated_at author url])
+
+        expect(LearningPath.first.learning_path_courses.map(&:position)).to eq([1, 2, 3])
       end
     end
   end
@@ -72,7 +74,7 @@ RSpec.describe LearningPathsController, type: :controller do
       it 'returns an error' do
         post :create, params: learning_path_params, as: :json
         expect(response.status).to eq(422)
-        expect(response.body).to eq({ success: false, errors: ["Name can't be blank"] }.to_json)
+        expect(response.body).to eq({ success: false, messages: ["Name can't be blank"] }.to_json)
       end
     end
   end
@@ -98,7 +100,7 @@ RSpec.describe LearningPathsController, type: :controller do
       it 'returns an error' do
         put :update, params: { id: learning_path.id }.merge(learning_path_params), as: :json
         expect(response.status).to eq(422)
-        expect(response.body).to eq({ success: false, errors: ["Name can't be blank"] }.to_json)
+        expect(response.body).to eq({ success: false, messages: ["Name can't be blank"] }.to_json)
       end
     end
   end

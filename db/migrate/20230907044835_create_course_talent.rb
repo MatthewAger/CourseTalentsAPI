@@ -6,7 +6,7 @@ class CreateCourseTalent < ActiveRecord::Migration[6.1]
       t.references :course, null: false, foreign_key: true
       t.references :talent, null: false, foreign_key: { to_table: :users }
 
-      t.boolean :completed, null: false, default: false
+      t.datetime :completed_at
 
       t.timestamps
       t.index %w[course_id talent_id], unique: true

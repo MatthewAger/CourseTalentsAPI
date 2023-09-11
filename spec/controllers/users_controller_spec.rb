@@ -108,7 +108,7 @@ RSpec.describe UsersController, type: :controller do
       it 'returns an error' do
         post :create, params: user_params, as: :json
         expect(response.status).to eq(422)
-        expect(response.body).to eq({ success: false, errors: ["Name can't be blank"] }.to_json)
+        expect(response.body).to eq({ success: false, messages: ["Name can't be blank"] }.to_json)
       end
     end
   end
@@ -134,7 +134,7 @@ RSpec.describe UsersController, type: :controller do
       it 'returns an error' do
         put :update, params: { id: user.id }.merge(user_params), as: :json
         expect(response.status).to eq(422)
-        expect(response.body).to eq({ success: false, errors: ["Name can't be blank"] }.to_json)
+        expect(response.body).to eq({ success: false, messages: ["Name can't be blank"] }.to_json)
       end
     end
   end
@@ -145,6 +145,20 @@ RSpec.describe UsersController, type: :controller do
     it 'deletes a user' do
       expect { delete :destroy, params: { id: user.id }, as: :json }.to change(User, :count).by(-1)
       expect(response.status).to eq(204)
+    end
+
+    context 'when the user is an author of courses' do
+      let!(:user) { create(:user, :with_authored_courses) }
+      let(:another_user) { create(:user) }
+
+      it 'transfers ownership of those course or aborts' do
+        expect { delete :destroy, params: { id: user.id }, as: :json }.to raise_error(ActiveRecord::RecordNotDestroyed)
+
+        another_user.reload
+        expect { delete :destroy, params: { id: user.id }, as: :json }.to change(User, :count).by(-1)
+        expect(response.status).to eq(204)
+        expect(Course.all.all? { |c| c.author_id == another_user.id }).to be(true)
+      end
     end
   end
 end

@@ -5,4 +5,8 @@ class LearningPathTalent < ApplicationRecord
   belongs_to :talent, class_name: 'User', inverse_of: :learning_path_talents
 
   validates :learning_path, uniqueness: { scope: :talent }
+
+  def complete!
+    update!(completed_at: Time.current)
+  end
 end

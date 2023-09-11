@@ -1,2 +1,2 @@
 json.success @success
-json.errors @messages
+json.messages @messages
